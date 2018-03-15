@@ -19,11 +19,10 @@ Loop:
 
 	for {
 		select {
-
 		case msg := <-rtm.IncomingEvents:
 			fmt.Print("Event received: ")
-
 			switch ev := msg.Data.(type) {
+
 			case *slack.ConnectedEvent:
 				fmt.Println("Connection counter:", ev.ConnectionCount)
 
@@ -33,7 +32,7 @@ Loop:
 				prefix := fmt.Sprintf("<@%s>", info.User.ID)
 
 				if ev.User != info.User.ID && strings.HasPrefix(ev.Text, prefix) {
-					rtm.SendMessage(rtm.NewOutgoingMessage("What's up buddy?", ev.Channel))
+					respond(rtm, ev, prefix)
 				}
 
 			case *slack.RTMError:
@@ -45,7 +44,6 @@ Loop:
 
 			default:
 				// No action; do Go switches have to be exhaustive?
-
 			}
 		}
 	}
